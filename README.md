@@ -17,7 +17,7 @@ git clone https://github.com/tquan8631-eng/DOAN_HOCMAY_NHOM2.git
 
 cd DOAN_HOCMAY_NHOM2
 
-3. Tạo môi trường ảo (Virtual Environment)
+2. Tạo môi trường ảo (Virtual Environment)
    
 Trên Windows:
 
@@ -31,7 +31,7 @@ python -m venv venv
 
 source venv/bin/activate
 
-5. Cài đặt các thư viện cần thiết
+3. Cài đặt các thư viện cần thiết
    
 pip install -r requirements.txt
 
