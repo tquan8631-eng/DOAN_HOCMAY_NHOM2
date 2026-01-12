@@ -25,77 +25,77 @@ def main():
     
     print(f"\nDang xu ly file: {filepath}")
     
-    preprocessor = DataPreprocessor(filepath)
-    df = preprocessor.load_data()
-    preprocessor.check_quality()
-    df = preprocessor.map_frequency()
-    X = preprocessor.get_features()
+    preprocessor = DataPreprocessor(filepath) # Khởi tạo bộ tiền xử lý
+    df = preprocessor.load_data()  # Load dữ liệu CSV vào DataFrame
+    preprocessor.check_quality()  # Kiểm tra chất lượng dữ liệu
+    df = preprocessor.map_frequency() # Map Frequency of Purchases -> Frequency_Num
+    X = preprocessor.get_features()  # Lấy tập đặc trưng đầu vào (X)
     
     # BUOC 2: PHAN TICH KHAM PHA (EDA)
     print("\n" + "="*60)
     print("BUOC 2: PHAN TICH KHAM PHA DU LIEU (EDA)")
     print("="*60)
     
-    eda = EDA(df)
-    eda.analyze_distribution('Purchase Amount (USD)', 'Phan phoi so tien mua hang')
-    eda.analyze_distribution('Frequency_Num', 'Phan phoi tan suat mua')
+    eda = EDA(df) # Khởi tạo đối tượng EDA
+    eda.analyze_distribution('Purchase Amount (USD)', 'Phan phoi so tien mua hang')  # Phân phối mức chi tiêu
+    eda.analyze_distribution('Frequency_Num', 'Phan phoi tan suat mua')  # Phân phối tần suất mua hàng
     
     # BUOC 3: CHUAN HOA DU LIEU
     print("\n" + "="*60)
     print("BUOC 3: CHUAN HOA DAC TRUNG")
     print("="*60)
     
-    fe = FeatureEngineer()
-    X_scaled = fe.scale_features(X)
+    fe = FeatureEngineer()  # Khởi tạo module xử lý đặc trưng
+    X_scaled = fe.scale_features(X) # Chuẩn hóa dữ liệu
     
     # BUOC 4: PHAN CUM K-MEANS
     print("\n" + "="*60)
     print("BUOC 4: PHAN CUM K-MEANS")
     print("="*60)
     
-    kmeans = KMeansClusterer()
-    kmeans.elbow_method(X_scaled)
-    kmeans.silhouette_analysis(X_scaled)
+    kmeans = KMeansClusterer()  # Khởi tạo mô hình K-Means
+    kmeans.elbow_method(X_scaled)  # Áp dụng Elbow Method xác định số cụm
+    kmeans.silhouette_analysis(X_scaled) # Phân tích Silhouette theo số cụm
     
-    labels_kmeans = kmeans.fit(X_scaled, n_clusters=3)
-    df['Cluster'] = labels_kmeans
+    labels_kmeans = kmeans.fit(X_scaled, n_clusters=3)  # Huấn luyện K-Means với k = 3
+    df['Cluster'] = labels_kmeans   # Lưu nhãn cụm K-Means vào DataFrame
     
-    results_kmeans = kmeans.evaluate(X_scaled)
-    kmeans.visualize(df, "Phan cum khach hang - K-Means")
-    kmeans.analyze_clusters(df)
+    results_kmeans = kmeans.evaluate(X_scaled)  # Đánh giá chất lượng K-Means
+    kmeans.visualize(df, "Phan cum khach hang - K-Means") # Trực quan hóa kết quả phân cụm K-Means
+    kmeans.analyze_clusters(df)  # Phân tích đặc trưng từng cụm K-Means
     
     # BUOC 5: PHAN CUM DBSCAN
     print("\n" + "="*60)
     print("BUOC 5: PHAN CUM DBSCAN")
     print("="*60)
     
-    dbscan = DBSCANClusterer(eps=0.7, min_samples=5)
-    labels_dbscan = dbscan.fit(X_scaled)
-    df['Cluster_DBSCAN'] = labels_dbscan
+    dbscan = DBSCANClusterer(eps=0.7, min_samples=5)  # Tham số mật độ DBSCAN
+    labels_dbscan = dbscan.fit(X_scaled)  # Huấn luyện DBSCAN
+    df['Cluster_DBSCAN'] = labels_dbscan # Lưu nhãn DBSCAN (-1 là nhiễu)
     
-    results_dbscan = dbscan.evaluate(X_scaled)
-    dbscan.visualize(df, "Phan cum khach hang - DBSCAN")
+    results_dbscan = dbscan.evaluate(X_scaled) # Đánh giá DBSCAN
+    dbscan.visualize(df, "Phan cum khach hang - DBSCAN")  # Trực quan hóa kết quả DBSCAN
     
     # BUOC 6: PHAN CUM HIERARCHICAL
     print("\n" + "="*60)
     print("BUOC 6: PHAN CUM PHAN CAP (HIERARCHICAL)")
     print("="*60)
     
-    hc = HierarchicalClusterer(n_clusters=3, linkage='ward')
-    hc.plot_dendrogram(X_scaled)
-    labels_hc = hc.fit(X_scaled)
-    df['Cluster_HC'] = labels_hc
+    hc = HierarchicalClusterer(n_clusters=3, linkage='ward')  # Khởi tạo phân cụm phân cấp
+    hc.plot_dendrogram(X_scaled)  # Vẽ dendrogram quan sát cấu trúc dữ liệu
+    labels_hc = hc.fit(X_scaled) # Huấn luyện Hierarchical Clustering
+    df['Cluster_HC'] = labels_hc   # Lưu nhãn cụm phân cấp
     
-    results_hc = hc.evaluate(X_scaled)
-    hc.visualize(df, "Phan cum khach hang - Hierarchical")
-    hc.analyze_clusters(df)
+    results_hc = hc.evaluate(X_scaled)  # Đánh giá phân cụm phân cấp
+    hc.visualize(df, "Phan cum khach hang - Hierarchical")  # Trực quan hóa kết quả Hierarchical
+    hc.analyze_clusters(df)  # Phân tích đặc trưng từng cụm
     
     # BUOC 7: SO SANH VA DANH GIA
     print("\n" + "="*60)
     print("BUOC 7: SO SANH VA DANH GIA CAC MO HINH")
     print("="*60)
     
-    evaluator = ModelEvaluator(df)
+    evaluator = ModelEvaluator(df)  # Khởi tạo bộ đánh giá tổng hợp
     
     # So sanh phan phoi chi tieu
     evaluator.compare_distributions('Cluster', 'Purchase Amount (USD)', 

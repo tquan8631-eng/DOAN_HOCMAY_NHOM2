@@ -8,9 +8,9 @@ class KMeansClusterer:
     """Phân cụm bằng K-Means"""
     
     def __init__(self):
-        self.model = None
-        self.labels = None
-        self.n_clusters = None
+        self.model = None  ## Lưu mô hình K-Means
+        self.labels = None  # Lưu nhãn cụm của từng điểm dữ liệu
+        self.n_clusters = None  # Số cụm được sử dụng
         
     def elbow_method(self, X_scaled, k_range=range(1, 11)):
         """Tìm số cụm tối ưu bằng Elbow Method"""
@@ -18,14 +18,14 @@ class KMeansClusterer:
         print("ELBOW METHOD - XAC DINH SO CUM")
         print("="*50)
         
-        wcss = []
-        for k in k_range:
-            kmeans = KMeans(n_clusters=k, random_state=42)
-            kmeans.fit(X_scaled)
-            wcss.append(kmeans.inertia_)
+        wcss = []   # Danh sách lưu WCSS cho từng k
+        for k in k_range: # Lặp qua các giá trị số cụm
+            kmeans = KMeans(n_clusters=k, random_state=42)  # Cố định kết quả
+            kmeans.fit(X_scaled)  # Huấn luyện K-Means
+            wcss.append(kmeans.inertia_)  #Lưu WCSS
             print(f"k={k}: WCSS={kmeans.inertia_:.2f}")
         
-        plt.figure(figsize=(8, 5))
+        plt.figure(figsize=(8, 5)) 
         plt.plot(k_range, wcss, marker='o', linewidth=2)
         plt.xlabel("So cum (k)")
         plt.ylabel("WCSS (Within-Cluster Sum of Squares)")
@@ -41,11 +41,11 @@ class KMeansClusterer:
         print("SILHOUETTE ANALYSIS")
         print("="*50)
         
-        scores = []
+        scores = []  # Lưu Silhouette Score cho từng k
         for k in k_range:
             kmeans = KMeans(n_clusters=k, random_state=42)
-            labels = kmeans.fit_predict(X_scaled)
-            score = silhouette_score(X_scaled, labels)
+            labels = kmeans.fit_predict(X_scaled)  # Huấn luyện & gán nhãn
+            score = silhouette_score(X_scaled, labels)   # Tính Silhouette
             scores.append(score)
             print(f"k={k}: Silhouette Score={score:.4f}")
         
@@ -57,7 +57,7 @@ class KMeansClusterer:
         plt.grid(True, alpha=0.3)
         plt.show()
         
-        best_k = list(k_range)[np.argmax(scores)]
+        best_k = list(k_range)[np.argmax(scores)]  # Chọn k có Silhouette cao nhất
         print(f"\nSo cum toi uu (Silhouette): k={best_k}")
         
         return scores
@@ -68,13 +68,13 @@ class KMeansClusterer:
         print(f"HUAN LUYEN K-MEANS VOI {n_clusters} CUM")
         print("="*50)
         
-        self.n_clusters = n_clusters
+        self.n_clusters = n_clusters   #Lưu số cụm
         self.model = KMeans(n_clusters=n_clusters, random_state=42)
-        self.labels = self.model.fit_predict(X_scaled)
+        self.labels = self.model.fit_predict(X_scaled)  # Huấn luyện mô hình và gán nhãn cụm cho dữ liệu
         
         print(f"Hoan thanh huan luyen")
         print(f"So diem moi cum:")
-        unique, counts = np.unique(self.labels, return_counts=True)
+        unique, counts = np.unique(self.labels, return_counts=True)   # Đếm số điểm trong từng cụm
         for cluster, count in zip(unique, counts):
             print(f"   - Cluster {cluster}: {count} diem")
         
@@ -86,8 +86,8 @@ class KMeansClusterer:
         print("DANH GIA MO HINH K-MEANS")
         print("="*50)
         
-        sil_score = silhouette_score(X_scaled, self.labels)
-        db_score = davies_bouldin_score(X_scaled, self.labels)
+        sil_score = silhouette_score(X_scaled, self.labels)  # Tính Silhouette Score
+        db_score = davies_bouldin_score(X_scaled, self.labels)   # Tính Davies–Bouldin Index
         
         print(f"\nCac chi so danh gia:")
         print(f"   - Silhouette Score: {sil_score:.4f} (cao hon tot hon, max=1)")
@@ -99,9 +99,9 @@ class KMeansClusterer:
         """Trực quan hóa kết quả"""
         plt.figure(figsize=(10, 6))
         scatter = plt.scatter(
-            df['Purchase Amount (USD)'],
-            df['Frequency_Num'],
-            c=self.labels,
+            df['Purchase Amount (USD)'],  #Mức chi tiêu
+            df['Frequency_Num'],   #Tần suất mua
+            c=self.labels,   # Màu theo nhãn cụm
             cmap='viridis',
             s=50,
             alpha=0.6,
@@ -120,10 +120,10 @@ class KMeansClusterer:
         print("PHAN TICH DOC DIEM CAC CUM")
         print("="*50)
         
-        df_temp = df.copy()
-        df_temp['Cluster'] = self.labels
+        df_temp = df.copy()  #Tạo bản sao dữ liệu
+        df_temp['Cluster'] = self.labels #Gán nhãn cụm
         
-        summary = df_temp.groupby('Cluster')[['Purchase Amount (USD)', 'Frequency_Num']].agg(['mean', 'std', 'min', 'max'])
+        summary = df_temp.groupby('Cluster')[['Purchase Amount (USD)', 'Frequency_Num']].agg(['mean', 'std', 'min', 'max']) # Thống kê đặc trưng từng cụm
         print(summary)
         
         return summary
