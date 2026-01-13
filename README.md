@@ -48,3 +48,4 @@ Chạy file chính
 cd src
 
 python main.py
+https://colab.research.google.com/drive/1-lUCu9fsBusa6EHhVQywVeuwLpsNkczX?usp=sharing#scrollTo=TBqMXUYDPwa2
